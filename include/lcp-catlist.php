@@ -277,6 +277,91 @@ class CatList{
       return null;
     endif;
   }
+  
+  /**
+   * Parse posts_tags parameters
+   */
+  private function get_posts_tags_params() {
+    // Should tags be wrapped with links to tag pages
+    $taglink = false;
+    // A string to display before the tags
+    $prefix = null;
+    // A string to display between tags
+    $glue = null;
+    // Should each tag be wrapped with html
+    $inner = null;
+
+    // Get params' values
+    if ($this->utils->lcp_not_empty('taglink') &&
+        $this->params['taglink'] == 'yes')  {
+      $taglink = true;
+    }
+    if ($this->utils->lcp_not_empty('posts_tags_prefix')) {
+      $prefix = $this->params['posts_tags_prefix'];
+    }
+    if ($this->utils->lcp_not_empty('posts_tags_glue')) {
+      $glue = $this->params['posts_tags_glue'];
+    }
+    if ($this->utils->lcp_not_empty('posts_tags_inner')) {
+      $inner = $this->params['posts_tags_inner'];
+    }
+
+    return array(
+      'taglink' => $taglink,
+      'prefix' => $prefix,
+      'glue' => $glue,
+      'inner' => $inner
+    );
+  }
+
+  private function get_taglink_to_show($taglink, $tag, $tag_string) {
+    if ($taglink) {
+      $tag_string = '<a href="' . get_tag_link($tag->term_id) . '">' .
+                    $tag_string . '</a>';
+    }
+    return $tag_string;
+  }
+
+  private function get_inner_to_show($inner, $tag, $tag_string) {
+    if ($inner) {
+      $tag_string = '<' . $inner .  ' class="tag-' . $tag->slug . '">' .
+                    $tag_string . '</' . $inner . '>';
+    }
+    return $tag_string;
+  }
+
+  /**
+   * Get posts_tags html
+   */
+  public function get_posts_tags($single) {
+    // Check if tags should be displayed
+    if (!$this->utils->lcp_not_empty('posts_tags') ||
+        $this->params['posts_tags'] != 'yes')  {
+      return null;
+    }
+    // Get parsed parameters
+    $params = $this->get_posts_tags_params();
+
+    // Get the post's tags IDs, returns false if post has no tags
+    $tags = get_the_tags($single->ID);
+
+    // Construct output string based on $params
+    $output = '';
+    if (is_array($tags)) {
+      $output .= $params['prefix'];
+      $parsed_tags = array();
+      foreach($tags as $tag) {
+        $tag_string = $tag->name;
+        $tag_string = $this->get_taglink_to_show($params['taglink'], $tag, $tag_string);
+        $tag_string = $this->get_inner_to_show($params['inner'], $tag, $tag_string);
+        $parsed_tags[] = $tag_string;
+      }
+      $output .= implode($params['glue'], $parsed_tags);
+      return $output;
+    } else {
+      return null;
+    }
+  }
 
   public function get_author_to_show($single){
     if ($this->params['author'] == 'yes'):

@@ -212,6 +212,9 @@ class CatListDisplayer {
     if (!empty($this->params['display_id']) && $this->params['display_id'] == 'yes'){
         $lcp_display_output .= $single->ID;
     }
+    
+    // Post's tags
+    $lcp_display_output .= $this->get_stuff_with_tags_and_classes('posts_tags', $single);
 
     // Custom field display
     $lcp_display_output .= $this->get_custom_fields($single);
@@ -293,6 +296,10 @@ class CatListDisplayer {
   private function get_excerpt($single, $tag = null, $css_class = null){
     return $this->content_getter('excerpt', $single, $tag, $css_class);
   }
+  
+  private function get_posts_tags($single, $tag = null, $css_class = null){
+    return $this->content_getter('posts_tags', $single, $tag, $css_class);
+  }
 
   private function get_pagination(){
     return $this->catlist->get_pagination();
@@ -317,6 +324,10 @@ class CatListDisplayer {
     case 'excerpt':
       $info = $this->catlist->get_excerpt($post);
       $info = preg_replace('/\[.*\]/', '', $info);
+      break;
+    case 'posts_tags':
+      $info = $this->catlist->get_posts_tags($post);
+      break;
     }
     return $this->assign_style($info, $tag, $css_class);
   }
