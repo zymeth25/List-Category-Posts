@@ -8,7 +8,7 @@ then
 
     apt-get update
 
-    apt-get install -y subversion apache2 php7.0 php7.0-xml libapache2-mod-php7.0 mysql-server-5.7 php7.0-mysql
+    apt-get install -y subversion apache2 php7.0 php7.0-xml php7.0-mbstring libapache2-mod-php7.0 mysql-server-5.7 php7.0-mysql
 fi
 
 # Create the WordPress database and corresponding user
