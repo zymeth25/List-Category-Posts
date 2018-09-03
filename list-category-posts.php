@@ -141,6 +141,7 @@ class ListCategoryPosts{
         'before_day' => '',
         'tags_as_class' => 'no',
         'pagination_bookmarks' => '',
+        'ignore_sticky_posts' => '',
       );
     }
     return self::$default_params;
